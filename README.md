@@ -9,7 +9,7 @@
 # Komunikácia s PC
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/VRS-Predmet/vrs_cvicenie_4/master/images/terminal.png" width="850">
+    <img src="https://github.com/VRS-Predmet/vrs_cvicenie_4/blob/zadanie_cv4/images/terminal.png" width="850">
 </p>
 
 - Nucleo doska ma fyzicky prepojený USART (konkrétne USART2) s ST-LINK/V2-1 a tak vytvára virtuálny COM port. Vďaka tomu dokážeme cez USART posielať dáta priamo do PC bez potreby USB/USART prevodníka (viac info v datasheet pre "STM32 Nucleo-32 boards")
@@ -21,7 +21,7 @@
 ### Konfigurácia Putty
 
 <p align="center">
-    <img src="https://github.com/VRS-Predmet/vrs_cvicenie_4/blob/master/images/putty_setup.png" width="850">
+    <img src="https://github.com/VRS-Predmet/vrs_cvicenie_4/blob/zadanie_cv4/images/putty_setup.png" width="850">
 </p>
 
 - Inštalácia Putty
@@ -76,7 +76,7 @@ int main()
 - podľa nastavenia makra "POLLING" na "1" alebo "0" sa bude využívať jeden z uvedených spôsobov prenosu dát (makro sa nastavuje vo vlastnosťiach projektu, project->properties)
 
 <p align="center">
-    <img src="https://github.com/VRS-Predmet/vrs_cvicenie_4/blob/master/images/nastavenie_makra.PNG" width="750">
+    <img src="https://github.com/VRS-Predmet/vrs_cvicenie_4/blob/zadanie_cv4/images/nastavenie_makra.PNG" width="750">
 </p>
 
 ### Polling
@@ -92,7 +92,7 @@ int main()
 ### Konfigurácia USART
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/VRS-Predmet/vrs_cvicenie_4/master/images/usart_config.png" width="850">
+    <img src="https://github.com/VRS-Predmet/vrs_cvicenie_4/blob/zadanie_cv4/images/usart_config.png" width="850">
 </p>
 
 - na cvičení sa bude využivať periféria USART2: PA2 - Tx, PA15 - Rx
@@ -106,7 +106,7 @@ int main()
 - pri Tx sa využije normálny mód (normal mode), to znamená, že keď sa dojde na koniec pamäťového miesta, prenos dáť sa ukončí
 
 <p align="center">
-    <img src="https://github.com/VRS-Predmet/vrs_cvicenie_4/blob/master/images/dma_config1.PNG" width="650">
+    <img src="https://github.com/VRS-Predmet/vrs_cvicenie_4/blob/zadanie_cv4/images/dma_config1.PNG" width="650">
 </p>
 
 - V NVIC je potrebné povoliť prerušenia pre DMA(všetky používané kanály) aj USART2
@@ -124,10 +124,10 @@ int main()
  
  2. V súbore "Src/usart.c" doplniť konfiguráciu DMA a USART periferie (s využitím LL knižnice).
  
- 3. V súbore "Src/usart.c" implementovať funkciu pre obsluhu prijimania dát od USART s DMA - "USART2_CheckDmaReception". Funkcia musí správne obslúžiť prijímanie dát od DMA a ich následné posielanie na spracovanie. Kontrolovať zaplnenosť DMA Rx buffera a zabrániť pretečeniu a strate prijatých dát. Buffer využívaný pre DMA USART Rx sa musí používať v normálnom režime, NIE v kruhovom. Veľkosť buffera je nastavena na 128 bytov. Predpokladá sa, že vysielacia strana naraz odošle maximálne 20 znakov (**2 body**).
+ 3. V súbore "Src/usart.c" implementovať funkciu pre obsluhu prijimania dát od USART s DMA - "USART2_CheckDmaReception". Funkcia musí správne obslúžiť prijímanie dát od DMA a ich následné posielanie na spracovanie. Kontrolovať zaplnenosť DMA Rx buffera a zabrániť pretečeniu a strate prijatých dát. Buffer využívaný pre DMA USART Rx sa musí používať v normálnom režime, NIE v kruhovom. Veľkosť buffera je nastavena na 128 bytov. Predpokladá sa, že vysielacia strana naraz odošle maximálne 20 znakov.
  
- 5. V subore "Src/main.c" implementovať funkciu "proccesDmaData", ktorá spracuje prijaté dáta. Spracovať znamená, že po prijatí súboru znakov vyhodnotí koľko z prijatých znakov boli malé písmená a koľko boli veľké písmená. Každý súbor znakov, ktorý má byť spracovaný sa musí začínať znakom "#" a končiť znakom "$". To znamená, že platný súbor znakov, pre ktorý sa vyhodnotí počet malých a veľkých písmen bude vyzerať napríklad ako "#Platn15uborZnakov$". Pokiaľ nie je detegovaný štartovací znak "#", funkcia bude prijaté znaky ignorovať. Ak bol prijatý štartovací znak, súbor znakov bude vyhodnotený až po prijatí ukončovacieho znaku "$". Ak po prijatí štartovacieho znaku nebude počas nasledujúcich 35 znakov prijatý ukončovací znak, prijaté dáta sa zahodia a funkcia bude čakať na nový štartovací znak. Validný prijatý súbor znakov bude odoslaný, ako je špecifikované v komentári vo while slučke. (**1.5 bodu**)
+ 5. V subore "Src/main.c" implementovať funkciu "proccesDmaData", ktorá spracuje prijaté dáta. Spracovať znamená, že po prijatí súboru znakov vyhodnotí koľko z prijatých znakov boli malé písmená a koľko boli veľké písmená. Každý súbor znakov, ktorý má byť spracovaný sa musí začínať znakom "#" a končiť znakom "$". To znamená, že platný súbor znakov, pre ktorý sa vyhodnotí počet malých a veľkých písmen bude vyzerať napríklad ako "#Platn15uborZnakov$". Pokiaľ nie je detegovaný štartovací znak "#", funkcia bude prijaté znaky ignorovať. Ak bol prijatý štartovací znak, súbor znakov bude vyhodnotený až po prijatí ukončovacieho znaku "$". Ak po prijatí štartovacieho znaku nebude počas nasledujúcich 35 znakov prijatý ukončovací znak, prijaté dáta sa zahodia a funkcia bude čakať na nový štartovací znak. Validný prijatý súbor znakov bude odoslaný, ako je špecifikované v komentári vo while slučke.
  
- 6. V subore "Src/main.c" implementovať periodické odosielanie dát o aktuálnom stave DMA Rx buffera cez USART2 do PC. Formát spravý a frekvencia posielania sú špecifikované inštrukciami v komentári vo while slučke. Implementácia periodického odoielania môže byť priamo vo while slučke poprípade si môžete vytvoriť vlastnú funkciu, ktorú budete vo while slučke volať. V tomto smere máte voľnú ruku. Podstatné je, aby odosielané dáta boli zobraziteľné v PC pomocou terminálu. (**0.5 bodu**)
+ 6. V subore "Src/main.c" implementovať periodické odosielanie dát o aktuálnom stave DMA Rx buffera cez USART2 do PC. Formát spravý a frekvencia posielania sú špecifikované inštrukciami v komentári vo while slučke. Implementácia periodického odoielania môže byť priamo vo while slučke poprípade si môžete vytvoriť vlastnú funkciu, ktorú budete vo while slučke volať. V tomto smere máte voľnú ruku. Podstatné je, aby odosielané dáta boli zobraziteľné v PC pomocou terminálu.
  
  7. Odovzdáva sa na začiatku cvičenia 6 a do AIS.
