@@ -117,7 +117,11 @@ void MX_USART2_UART_Init(void)
 
   /* Enable USART2 peripheral and interrupts*/
 
-  	  //type your code here:
+  LL_USART_EnableDMAReq_RX(USART2);
+  LL_USART_EnableDMAReq_TX(USART2);
+  LL_USART_EnableIT_IDLE(USART2);
+  LL_USART_Enable(USART2);
+  LL_DMA_EnableChannel(DMA1, LL_DMA_CHANNEL_6);
 }
 
 
