@@ -23,7 +23,8 @@
 #include "dma.h"
 #include "usart.h"
 #include "gpio.h"
-
+#include <stdio.h>
+#include <string.h>
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 
@@ -38,7 +39,20 @@ void proccesDmaData(uint8_t sign);
 
 /* Space for your global variables. */
 
-	// type your global variables here:
+#define MAX_STR_LEN 35
+
+letter_count_ letters = {0};
+static volatile uint8_t valid_flag = 0;
+static char    valid_str[MAX_STR_LEN];
+static uint8_t valid_lower = 0, valid_upper = 0;
+static uint8_t tx_buf[128];
+
+static void sendString(uint16_t len)
+{
+	while(LL_DMA_IsEnabledChannel(DMA1, LL_DMA_CHANNEL_7));
+	USART2_PutBuffer(tx_buf, len);
+	while(LL_DMA_IsEnabledChannel(DMA1, LL_DMA_CHANNEL_7));
+}
 
 
 int main(void)
@@ -59,7 +73,8 @@ int main(void)
 
   /* Space for your local variables, callback registration ...*/
 
-  	  //type your code here:
+  USART2_RegisterCallback(proccesDmaData);
+  uint16_t tick = 0;
 
   while (1)
   {
@@ -75,7 +90,26 @@ int main(void)
 	   * Example message (what I wish to see in terminal) - Valid string: Platn15uborZnakov, lower-case: 13, upper-case: 2
 	   */
 
-  	  	  	  //type your code here:
+	  if(valid_flag)
+	  {
+		  valid_flag = 0;
+		  int len = sprintf((char*)tx_buf, "Valid string: %s, lower-case: %d, upper-case: %d\r\n",
+		                    valid_str, valid_lower, valid_upper);
+		  sendString(len);
+	  }
+
+	  if(++tick >= 200)
+	  {
+		  tick = 0;
+		  uint16_t occupied = DMA_USART2_BUFFER_SIZE - LL_DMA_GetDataLength(DMA1, LL_DMA_CHANNEL_6);
+		  uint16_t load10 = (occupied * 1000) / DMA_USART2_BUFFER_SIZE;
+		  int len = sprintf((char*)tx_buf,
+		      "Buffer capacity: %d bytes, occupied memory: %d bytes, load [in %%]: %d.%d%%\r\n",
+		      DMA_USART2_BUFFER_SIZE, occupied, load10 / 10, load10 % 10);
+		  sendString(len);
+	  }
+
+	  LL_mDelay(10);
   }
   /* USER CODE END 3 */
 }
@@ -119,7 +153,41 @@ void proccesDmaData(uint8_t sign)
 {
 	/* Process received data */
 
-		// type your algorithm here:
+	static uint8_t receiving = 0, idx = 0;
+	static char str[MAX_STR_LEN];
+
+	if(!receiving)
+	{
+		if(sign == '#')
+		{
+			receiving = 1;
+			idx = 0;
+			letters.small_letter = 0;
+			letters.capital_letter = 0;
+		}
+		return;
+	}
+
+	if(sign == '$')
+	{
+		str[idx] = '\0';
+		memcpy(valid_str, str, idx + 1);
+		valid_lower = letters.small_letter;
+		valid_upper = letters.capital_letter;
+		valid_flag = 1;
+		receiving = 0;
+		return;
+	}
+
+	if(idx >= MAX_STR_LEN - 1)
+	{
+		receiving = 0;
+		return;
+	}
+
+	str[idx++] = sign;
+	if(sign >= 'a' && sign <= 'z') letters.small_letter++;
+	else if(sign >= 'A' && sign <= 'Z') letters.capital_letter++;
 }
 
 
